@@ -37,6 +37,35 @@ function findNonSequenceXmasValue (inputs, preambleLength) {
   return null;
 }
 
+function findContiguousSum (value, options) {
+  for (let [i, a] of options.entries()) {
+    let sum = a;
+    if (a >= value) {
+      continue;
+    }
+    
+    for (let [j, b] of options.slice(i + 1).entries()) {
+      sum += b;
+      if (b >= value || sum > value) {
+        break;
+      }
+
+      if (sum === value) {
+        const absoluteIndex = i + j + 2;
+        return options.slice(i, absoluteIndex);
+      }
+    }
+  }
+
+  return null;
+}
+
+function findEncryptionWeakness (sequence) {
+  const min = Math.min(...sequence);
+  const max = Math.max(...sequence);
+  return min + max;
+}
+
 function init (inputs, preambleLength) {
   const invalidValue = findNonSequenceXmasValue(inputs, preambleLength);
 
@@ -45,6 +74,17 @@ function init (inputs, preambleLength) {
   }
 
   console.log(`The invalid sequence value is ${invalidValue}`);
+
+  const contiguousSumOfInvalidValue = findContiguousSum(invalidValue, inputs);
+  if (contiguousSumOfInvalidValue === null) {
+    throw new Error('No contiguous sequence found');
+  }
+
+  console.log(`The contiguous sequence is ${contiguousSumOfInvalidValue}`);
+
+  const encryptionWeakness = findEncryptionWeakness(contiguousSumOfInvalidValue);
+
+  console.log(`The XMAS encryption weakness is ${encryptionWeakness}`);
 }
 
 init(getInputs(), 25);
